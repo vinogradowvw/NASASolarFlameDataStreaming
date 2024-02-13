@@ -30,13 +30,10 @@ services:
 $ docker-compose up -d
 ```
 
-#### Creating a separate topics for sending the notifications and data
+#### Creating the topic with partitions=2, so we will sent the data and notifications separately
 ```bash
-$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic solar-data-topic
-$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic notifications-topic
+$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic solar-data-topic --partitions 2 --replication-factor 1
 ```
 
-Now we can access topics on port 9092
-
-![image](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/e3d8f33f-d7f9-4aaa-bf68-69839365afe5)
+Now we can access topic on port 9092
 
