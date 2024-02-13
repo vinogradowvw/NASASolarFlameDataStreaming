@@ -30,11 +30,13 @@ services:
 $ docker-compose up -d
 ```
 
-#### Creating a topic 
+#### Creating a separate topics for sending the notifications and data
 ```bash
-$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic nasa-topic
+$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic solar-data-topic
+$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic notifications-topic
 ```
 
-Now we can access to the topic on port 9092 with name nasa-topic
+Now we can access topics on port 9092
 
-![image](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/948a53e7-db40-43d4-aa96-4d875ea0ae2a)
+![image](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/e3d8f33f-d7f9-4aaa-bf68-69839365afe5)
+
