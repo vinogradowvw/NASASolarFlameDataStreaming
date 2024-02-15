@@ -1,4 +1,4 @@
-## **Setting up the Kafka Docker image**
+## **Setting up the Kafka with Docker**
 
 Using next Docker file and commands:
 
@@ -37,3 +37,46 @@ $ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafk
 
 Now we can access topic on port 9092
 
+## **Setting up the Saprk with Docker**
+
+docker-compose.yml:
+```docker-compose.yml
+version: '2'
+
+services:
+  spark:
+    image: docker.io/bitnami/spark:3.5
+    environment:
+      - SPARK_MODE=master
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+    ports:
+      - '8080:8080'
+    volumes:
+      - ".:/files:rw"
+  spark-worker:
+    image: docker.io/bitnami/spark:3.5
+    environment:
+      - SPARK_MODE=worker
+      - SPARK_MASTER_URL=spark://spark:7077
+      - SPARK_WORKER_MEMORY=1G
+      - SPARK_WORKER_CORES=1
+      - SPARK_RPC_AUTHENTICATION_ENABLED=no
+      - SPARK_RPC_ENCRYPTION_ENABLED=no
+      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
+      - SPARK_SSL_ENABLED=no
+      - SPARK_USER=spark
+```
+
+#### Creating actual docker container
+```bash
+$ docker-compose up -d
+```
+
+Now we can acces our Spark container with container id
+```bash
+$ docker exec -i -t 694a36d7b402 /bin/bash
+```
