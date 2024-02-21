@@ -4,4 +4,8 @@ kafka:
   TOPIC: solar-data-topic
 
 spark:
-  MASTER: spark://172.23.0.4:7077
+  MASTER: spark://172.23.0.2:7077
+
+cassandra:
+  IP: 172.23.0.4
+  

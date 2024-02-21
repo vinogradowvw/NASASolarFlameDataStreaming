@@ -86,10 +86,6 @@ def read_kafka_topic():
         .select("value.*") \
         .selectExpr('messageID', 'messageURL', 'cast(messageIssueTime as timestamp) as messageIssueTime', 'messageBody')
     
-    last_notification_id = sc.accumulator(notification_df.select("messageID"), StingAccumulatorParam())
-    
-    print()
-    
     query = notification_df.writeStream.outputMode("append").format("console").option("truncate", "false").start()
     query.awaitTermination()
 

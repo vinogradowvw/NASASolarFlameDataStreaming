@@ -3,10 +3,15 @@ from fastapi import FastAPI
 from data_parsing import get_notifications_data, get_solar_data
 from aiokafka import AIOKafkaProducer
 from datetime import datetime
+from cassandra.cluster import Cluster
+from cassandra.auth import PlainTextAuthProvider
 from yaml import load, FullLoader
 
 with open('../config.yml', 'r') as f:
     config = load(f, Loader=FullLoader)
+
+auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+cluster = Cluster(config['cassandra']['IP'], auth_provider=auth_provider)
 
 app = FastAPI()
 
@@ -24,15 +29,29 @@ class KafkaProducerSingleton:
 
 @app.post('/notifications')
 async def root():
-    notification = await get_notifications_data()
+    try:
+        notification = await get_notifications_data()
+    except Exception as e:
+        return {'message': f'Exceprtion while getting datafrom API: {e}'}
+    try:
+        session = cluster.connect()
+    except Exception as e:
+        return {'message': f'Exceprtion while creating a session: {e}'}
+    message_ids = session.execute(query='''
+                    USE solar_data;
+                    SELECT DISTINCT(message_id) from solar_data;
+                    ''')
+    message_ids = list(message_ids)
+    session.shutdown()
     
-    
-    
-    notification = json.dumps(notification).encode('utf-8')
-    producer = await KafkaProducerSingleton.get_producer()
-    await producer.send_and_wait(config['kafka']['TOPIC'], key='notification'.encode('utf-8'), value=notification)
-    now = datetime.now()
-    return {'message': 'Notification is sent to the topic at {}'.format(now)}
+    if notification not in message_ids:
+        notification = json.dumps(notification).encode('utf-8')
+        producer = await KafkaProducerSingleton.get_producer()
+        await producer.send_and_wait(config['kafka']['TOPIC'], key='notification'.encode('utf-8'), value=notification)
+        now = datetime.now()
+        return {'message': f'--------------New notification is sent to the topic at {now}--------------'}
+    else:
+        return {'message': '--------------Notification is alrady noted--------------'}
 
 
 @app.post('/data')

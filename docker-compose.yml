@@ -60,11 +60,19 @@ services:
       - docker_network
   cassandra:
     image: 'bitnami/cassandra:latest'
-    ports:
-      - '9042:9042'
-      - '7000:7000'
-      - '7199:7199'
     networks:
       - docker_network
+    healthcheck:
+      test: [ "CMD", "/opt/bitnami/cassandra/bin/cqlsh", "-u cassandra", "-p cassandra" ,"-e \"describe keyspaces\"" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+    environment:
+      - CASSANDRA_SEEDS=cassandra
+      - CASSANDRA_PASSWORD_SEEDER=yes
+      - CASSANDRA_PASSWORD=cassandra
+volumes:
+  cassandra_data:
+    driver: local
 networks:
   docker_network:
