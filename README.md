@@ -1,4 +1,4 @@
-## **Setting up the Kafka with Docker**
+## **Setting up the Kafka Docker image**
 
 Using next Docker file and commands:
 
@@ -30,53 +30,11 @@ services:
 $ docker-compose up -d
 ```
 
-#### Creating the topic with partitions=2, so we will sent the data and notifications separately
+#### Creating a topic 
 ```bash
-$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic solar-data-topic --partitions 2 --replication-factor 1
+$ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafka:9092 --topic nasa-topic
 ```
 
-Now we can access topic on port 9092
+Now we can access to the topic on port 9092 with name nasa-topic
 
-## **Setting up the Saprk with Docker**
-
-docker-compose.yml:
-```docker-compose.yml
-version: '2'
-
-services:
-  spark:
-    image: docker.io/bitnami/spark:3.5
-    environment:
-      - SPARK_MODE=master
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
-    ports:
-      - '8080:8080'
-    volumes:
-      - ".:/files:rw"
-  spark-worker:
-    image: docker.io/bitnami/spark:3.5
-    environment:
-      - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark:7077
-      - SPARK_WORKER_MEMORY=1G
-      - SPARK_WORKER_CORES=1
-      - SPARK_RPC_AUTHENTICATION_ENABLED=no
-      - SPARK_RPC_ENCRYPTION_ENABLED=no
-      - SPARK_LOCAL_STORAGE_ENCRYPTION_ENABLED=no
-      - SPARK_SSL_ENABLED=no
-      - SPARK_USER=spark
-```
-
-#### Creating actual docker container
-```bash
-$ docker-compose up -d
-```
-
-Now we can acces our Spark container with container id
-```bash
-$ docker exec -i -t 694a36d7b402 /bin/bash
-```
+![image](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/948a53e7-db40-43d4-aa96-4d875ea0ae2a)
