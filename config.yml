@@ -1,11 +1,11 @@
 kafka:
-  BOOTSTRAP_SERVER_EXTERNAL: locahost:9092
+  BOOTSTRAP_SERVER_EXTERNAL: localhost:9092
   BOOTSTRAP_SERVER_INTERNAL: kafka:9092
   TOPIC: solar-data-topic
 
 spark:
-  MASTER: spark://172.23.0.2:7077
+  MASTER: spark://172.23.0.3:7077
 
 cassandra:
-  IP: 172.23.0.4
+  IP: localhost
   

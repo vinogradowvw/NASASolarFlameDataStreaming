@@ -65,8 +65,13 @@ def read_kafka_topic():
         conf = SparkConf()
         conf.setAll(
             [
-                ("spark.master", 'spark://172.23.0.2:7077'),
+                ("spark.master", 'spark://172.23.0.3:7077'),
                 ('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0'),
+                ('spark.jars.packages', 'com.datastax.spark:spark-cassandra-connector_2.12:3.4.1'),
+                ('spark.jars.packages', 'com.github.jnr:jnr-posix:3.1.15'),
+                ('spark.cossandra.connection.host', '084f2e99ef2a'),
+                ("spark.cassandra.auth.username", "cassandra"),
+                ("spark.cassandra.auth.password", "cassandra")
             ]
         )
         return SparkSession.builder.config(conf=conf).getOrCreate()
@@ -84,27 +89,16 @@ def read_kafka_topic():
     notification_df = streaming_df.selectExpr("cast(value as string) as value") \
         .withColumn("value", from_json(col('value'), notification_schema)) \
         .select("value.*") \
-        .selectExpr('messageID', 'messageURL', 'cast(messageIssueTime as timestamp) as messageIssueTime', 'messageBody')
+        .selectExpr('cast(messageID as string) as messageid', 'cast(messageURL as string) as messageurl', 'cast(messageIssueTime as timestamp) as messageissuetime', 'cast(messageBody as string) as messagebody')
     
-    query = notification_df.writeStream.outputMode("append").format("console").option("truncate", "false").start()
+    query = notification_df.writeStream.format("org.apache.spark.sql.cassandra") \
+        .option("keyspace", "nasa_project") \
+        .option("table", "notifications") \
+        .outputMode('append') \
+        .option("checkpointLocation", "/opt/bitnami/spark/checkpoints") \
+        .start()
+    
     query.awaitTermination()
 
 
 read_kafka_topic()
-
-
-
-# await consumer.start()
-
-
-
-
-# 
-# print(va.value)
-        
-# Поток Spark Streaming для обработки данных
-# kafka_stream = ssc.receiverStream(KafkaReceiver(consumer))
-# kafka_stream.foreachRDD(lambda rdd: rdd.foreach(process_message))
-
-# ssc.start()
-# ssc.awaitTermination()

@@ -13,17 +13,20 @@ async def send_periodic_post_request():
         try:
             async with httpx.AsyncClient() as client:
                 response = await client.post('http://127.0.0.1:8000/notifications')
-                if response.status_code != 200:
-                    print('/notifications: Error on FastAPI side: ', response.status_code)
+                if response.status_code == 200:
+                    print(response.text)
+                else:
+                    print('/notifications: Error on FastAPI side: ', response.status_code, response.status_code.details)
+                
         except httpx.ReadTimeout as e:
             print(f"HTTP request timed out: {e}")
-        await asyncio.sleep(10)
+        await asyncio.sleep(60)
 
 # just to test lets make a consumer here
 async def consume_messages():
     consumer = AIOKafkaConsumer(
         config['kafka']['TOPIC'],
-        bootstrap_servers=config['kafka']['BOOTSTRAP_SERVER_INTERNAL'],
+        bootstrap_servers=config['kafka']['BOOTSTRAP_SERVER_EXTERNAL'],
         auto_offset_reset='earliest',
         enable_auto_commit=True,
         value_deserializer=lambda x: x.decode('utf-8')

@@ -7,22 +7,22 @@ with open('config.yml', 'r') as f:
 
 auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
 
-cluster = Cluster(config['cassandra']['IP'], auth_provider=auth_provider)
+cluster = Cluster([config['cassandra']['IP']], auth_provider=auth_provider)
 session = cluster.connect()
 
 queries = [
     '''
-    CREATE KEYSPACE IF NOT EXISTS solar_data WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1};
+    CREATE KEYSPACE IF NOT EXISTS nasa_project WITH REPLICATION = {'class' : 'SimpleStrategy', 'replication_factor': 1};
     ''',
     '''
-    USE solar_data;
+    USE nasa_project;
     ''',
     '''
     CREATE TABLE IF NOT EXISTS notifications (
-        message_id text PRIMARY KEY,
+        messageID text PRIMARY KEY,
         messageURL text,
-        messageIssueTime text,
-        messageBody timestamp
+        messageIssueTime timestamp,
+        messageBody text
     ) WITH compression={'sstable_compression': 'SnappyCompressor'};
     ''',
     '''
