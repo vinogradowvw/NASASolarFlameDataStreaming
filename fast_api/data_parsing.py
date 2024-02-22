@@ -29,6 +29,6 @@ async def get_notifications_data(url: str='https://api.nasa.gov/DONKI/notificati
         response = response[0]
         return response
     else:
-        print('Error while requesting the Mars data:', response.status_code)
+        print('Error while requesting the notifications data:', response.status_code)
         print(response)
         return {}

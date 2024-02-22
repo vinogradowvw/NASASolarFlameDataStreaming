@@ -1,5 +1,5 @@
 import json
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from data_parsing import get_notifications_data, get_solar_data
 from aiokafka import AIOKafkaProducer
 from datetime import datetime
@@ -9,9 +9,6 @@ from yaml import load, FullLoader
 
 with open('../config.yml', 'r') as f:
     config = load(f, Loader=FullLoader)
-
-auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
-cluster = Cluster(config['cassandra']['IP'], auth_provider=auth_provider)
 
 app = FastAPI()
 
@@ -32,26 +29,31 @@ async def root():
     try:
         notification = await get_notifications_data()
     except Exception as e:
-        return {'message': f'Exceprtion while getting datafrom API: {e}'}
+        raise HTTPException(status_code=502, detail="Can not get data from API {}".format(e))
     try:
+        auth_provider = PlainTextAuthProvider(username='cassandra', password='cassandra')
+        cluster = Cluster([config['cassandra']['IP']], auth_provider=auth_provider)
         session = cluster.connect()
     except Exception as e:
-        return {'message': f'Exceprtion while creating a session: {e}'}
+        raise HTTPException(status_code=502, detail="Exceprtion while creating a session: {}".format(e))
+    session.execute('USE nasa_project;')
     message_ids = session.execute(query='''
-                    USE solar_data;
-                    SELECT DISTINCT(message_id) from solar_data;
+                    SELECT DISTINCT CAST(messageID AS TEXT) from notifications;
                     ''')
     message_ids = list(message_ids)
     session.shutdown()
     
     if notification not in message_ids:
         notification = json.dumps(notification).encode('utf-8')
-        producer = await KafkaProducerSingleton.get_producer()
+        try:
+            producer = await KafkaProducerSingleton.get_producer()
+        except Exception as e:
+            raise HTTPException(status_code=502, detail="Can not connect to kafka: {}".format(e))
         await producer.send_and_wait(config['kafka']['TOPIC'], key='notification'.encode('utf-8'), value=notification)
         now = datetime.now()
-        return {'message': f'--------------New notification is sent to the topic at {now}--------------'}
+        return '------New notification is sent to the topic at {} ------'.format(now)
     else:
-        return {'message': '--------------Notification is alrady noted--------------'}
+        return '--------------------------Notification is alrady noted--------------------------'
 
 
 @app.post('/data')
