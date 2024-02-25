@@ -19,21 +19,24 @@ queries = [
     ''',
     '''
     CREATE TABLE IF NOT EXISTS notifications (
-        messageID text PRIMARY KEY,
-        messageURL text,
-        messageIssueTime timestamp,
-        messageBody text
+        message_id text PRIMARY KEY,
+        message_url text,
+        message_issue_time timestamp,
+        message_body text
     ) WITH compression={'sstable_compression': 'SnappyCompressor'};
     ''',
     '''
     CREATE TABLE IF NOT EXISTS solar_data (
-        flrID text PRIMARY KEY,
-        classType text,
-        classType_encoded int,
-        sourceLocation text,
-        activeRegionNum int,
-        duration int,
-        peak_time timestamp
+        flr_iD text PRIMARY KEY,
+        begin_time timestamp,
+        end_time timestamp,
+        peak_time timestamp,
+        class_type text,
+        class_type_encoded float,
+        source_location text,
+        link text,
+        active_region_num int,
+        duration int
     ) WITH compression={'sstable_compression': 'SnappyCompressor'};
     '''
 ]

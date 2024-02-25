@@ -1,6 +1,6 @@
 kafka:
   BOOTSTRAP_SERVER_EXTERNAL: localhost:9092
-  BOOTSTRAP_SERVER_INTERNAL: kafka:9092
+  BOOTSTRAP_SERVER_INTERNAL: kafka:29092
   TOPIC: solar-data-topic
 
 spark:
