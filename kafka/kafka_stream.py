@@ -7,7 +7,7 @@ from yaml import load, FullLoader
 with open('config.yml', 'r') as f:
     config = load(f, Loader=FullLoader)
 
-# creating a loop where the data will be sent to the topic every 10 seconds
+# creating a loop where the data will be sent to the topic every minute
 async def send_periodic_post_request():
     while True:
         try:
@@ -32,32 +32,28 @@ async def send_periodic_post_request():
         await asyncio.sleep(60)
 
 # just to test lets make a consumer here
-async def consume_messages():
-    consumer = AIOKafkaConsumer(
-        config['kafka']['TOPIC'],
-        bootstrap_servers=config['kafka']['BOOTSTRAP_SERVER_EXTERNAL'],
-        auto_offset_reset='earliest',
-        enable_auto_commit=True,
-        value_deserializer=lambda x: x.decode('utf-8')
-    )
+# async def consume_messages():
+#     consumer = AIOKafkaConsumer(
+#         config['kafka']['TOPIC'],
+#         bootstrap_servers=config['kafka']['BOOTSTRAP_SERVER_EXTERNAL'],
+#         auto_offset_reset='earliest',
+#         enable_auto_commit=True,
+#         value_deserializer=lambda x: x.decode('utf-8')
+#     )
 
-    await consumer.start()
+#     await consumer.start()
 
-    try:
-        while True:
-            async for message in consumer:
-                # Handle the received message data
-                print("Received message:")
-                print(f"Topic: {message.topic}")
-                print(f"Partition: {message.partition}")
-                print(f"Offset: {message.offset}")
-                print(f"Key: {message.key}")
-                print(f"Value: {message.value}")
-    finally:
-        await consumer.stop()
-
-async def main():
-    tasks = [send_periodic_post_request(), consume_messages()]
-    await asyncio.gather(*tasks)
+#     try:
+#         while True:
+#             async for message in consumer:
+#                 # Handle the received message data
+#                 print("Received message:")
+#                 print(f"Topic: {message.topic}")
+#                 print(f"Partition: {message.partition}")
+#                 print(f"Offset: {message.offset}")
+#                 print(f"Key: {message.key}")
+#                 print(f"Value: {message.value}")
+#     finally:
+#         await consumer.stop()
     
 asyncio.run(send_periodic_post_request())

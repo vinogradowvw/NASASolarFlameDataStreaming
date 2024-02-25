@@ -1,4 +1,4 @@
-from pyspark.sql.functions import col, from_json, udf, unix_timestamp
+from pyspark.sql.functions import col, from_json, udf, unix_timestamp, regexp_extract
 from pyspark import SparkConf
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StructType, StructField, StringType, ArrayType, MapType, IntegerType
@@ -72,6 +72,7 @@ def read_kafka_topic():
         .option('kafka.bootstrap.servers', 'kafka:29092') \
         .option('subscribe', 'solar-data-topic') \
         .option('startingOffsets', 'earliest') \
+        .option("failOnDataLoss", "false") \
         .load() \
         .selectExpr("CAST(key AS STRING)", "CAST(value AS STRING)")
     
@@ -90,10 +91,8 @@ def read_kafka_topic():
                     'cast(sourceLocation as string) as source_location',
                     'cast(activeRegionNum as int) as active_region_num',
                     'cast(link as string) as link') \
-        .withColumn('end_time', unix_timestamp(col("end_time"), "yyyy-MM-dd'T'HH:mm'Z'")) \
-        .withColumn('begin_time', unix_timestamp(col("begin_time"), "yyyy-MM-dd'T'HH:mm'Z'")) \
-        .withColumn('peak_time', unix_timestamp(col("peak_time"), "yyyy-MM-dd'T'HH:mm'Z'")) \
-        .withColumn('duration', (col("end_time") - col("begin_time"))) \
+        .withColumn('duration', (unix_timestamp(col("end_time"), "yyyy-MM-dd'T'HH:mm'Z'") - unix_timestamp(col("begin_time"), "yyyy-MM-dd'T'HH:mm'Z'"))) \
+        .withColumn('class_letter', regexp_extract(col('class_type'), '([A-Za-z]+)', 1)) \
         .withColumn('class_type_encoded', parse_class_type_udf(col('class_type')))
 
     notification_df = notification_df.selectExpr("cast(value as string) as value") \
@@ -103,18 +102,7 @@ def read_kafka_topic():
                     'cast(messageURL as string) as message_url', 
                     'cast(messageIssueTime as string) as message_issue_time', 
                     'cast(messageBody as string) as message_body') \
-        .withColumn('message_issue_time', unix_timestamp(col("message_issue_time"), "yyyy-MM-dd'T'HH:mm'Z'")) \
         .withColumn("message_body", get_summary_message_udf(col("message_body")))
-        
-    # query_data = data_df.writeStream.format("console") \
-    #     .outputMode('append') \
-    #     .option('truncate', 'true') \
-    #     .start()
-    
-    # query_notification = notification_df.writeStream.format("console") \
-    #     .outputMode('append') \
-    #     .option('truncate', 'true') \
-    #     .start()
     
     query_data = data_df.writeStream.format("org.apache.spark.sql.cassandra") \
         .option("keyspace", "nasa_project") \

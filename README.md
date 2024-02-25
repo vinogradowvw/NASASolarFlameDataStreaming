@@ -38,3 +38,14 @@ $ docker exec -it kafka_kafka_1 kafka-topics.sh --create --bootstrap-server kafk
 Now we can access to the topic on port 9092 with name nasa-topic
 
 ![image](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/948a53e7-db40-43d4-aa96-4d875ea0ae2a)
+
+
+# Power BI
+
+To connect the cassandra to our Power BI we need a ODBC driver for cassandra, i use the Datastax one.
+
+After installing we need to to set up the driver. For this step we need a ip of the cassandra's container (since we setted up the ports in docker-compose file also for the localhost, we can use simply 127.0.0.1:9042)
+
+Then we need to go to the ODBC Data source administrator and find DataStax Cassandra ODBC DSN
+
+After this steps we can see a ODBC for cassandra in Power BI.

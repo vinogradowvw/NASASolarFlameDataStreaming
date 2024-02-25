@@ -31,6 +31,7 @@ queries = [
         begin_time timestamp,
         end_time timestamp,
         peak_time timestamp,
+        class_letter text,
         class_type text,
         class_type_encoded float,
         source_location text,
