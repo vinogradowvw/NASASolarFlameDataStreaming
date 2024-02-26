@@ -1,29 +1,14 @@
+## **About**
+
+I made this project to practice in my data engineering skills and learn new technologies such as Kafka, Spark, Fast API and Cassandra.
+The data i used in this project goes from NASA API. There is 2 types of data: notifications about new solar flares and data about each flare.
+I implemented "internal API" for getting the relevant data from NASA with FastAPI, afterwards,
+
+
 ## **Setting up the Kafka Docker image**
 
 Using next Docker file and commands:
 
-```docker-compose.yml
-version: "3"
-services:
-  zookeeper:
-    image: 'bitnami/zookeeper:latest'
-    ports:
-      - '2181:2181'
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-  kafka:
-    image: 'bitnami/kafka:latest'
-    ports:
-      - '9092:9092'
-    environment:
-      - KAFKA_BROKER_ID=1
-      - KAFKA_LISTENERS=PLAINTEXT://:9092
-      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://127.0.0.1:9092
-      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
-      - ALLOW_PLAINTEXT_LISTENER=yes
-    depends_on:
-      - zookeeper
-```
 
 #### Creating actual docker containers (Zookeeper and Kafka)
 ```bash

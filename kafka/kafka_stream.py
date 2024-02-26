@@ -15,20 +15,20 @@ async def send_periodic_post_request():
                 response = await client.post('http://127.0.0.1:8000/notifications')
                 if response.status_code == 200:
                     print(response.text)
-                    try:
-                        async with httpx.AsyncClient() as client:
-                            response = await client.post('http://127.0.0.1:8000/solar_data')
-                            if response.status_code == 200:
-                                print(response.text)
-                            else: 
-                                print('/data ', response.status_code, response.text)
-                    except httpx.ReadTimeout as e:
-                        print("HTTP request timed out: {}".format(e))
                 else:
                     print('/notifications: Message from FastAPI: ', response.status_code, response.text)
-                
         except httpx.ReadTimeout as e:
             print(f"HTTP request timed out: {e}")
+        try:
+            async with httpx.AsyncClient() as client:
+                response = await client.post('http://127.0.0.1:8000/solar_data')
+                if response.status_code == 200:
+                    print(response.text)
+                else: 
+                    print('/data ', response.status_code, response.text)
+        except httpx.ReadTimeout as e:
+            print("HTTP request timed out: {}".format(e))
+        
         await asyncio.sleep(60)
 
 # just to test lets make a consumer here

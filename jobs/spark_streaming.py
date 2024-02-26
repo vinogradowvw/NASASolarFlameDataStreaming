@@ -52,7 +52,7 @@ def read_kafka_topic():
         conf = SparkConf()
         conf.setAll(
             [
-                ("spark.master", 'spark://172.23.0.4:7077'),
+                ("spark.master", 'spark://172.23.0.2:7077'),
                 ('spark.jars.packages', 'org.apache.spark:spark-sql-kafka-0-10_2.12:3.5.0'),
                 ('spark.jars.packages', 'com.datastax.spark:spark-cassandra-connector_2.12:3.4.1'),
                 ('spark.jars.packages', 'com.github.jnr:jnr-posix:3.1.15'),
