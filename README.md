@@ -2,7 +2,7 @@
 
 I made this project to practice in my data engineering skills and learn new technologies such as Kafka, Spark, Fast API and Cassandra.
 The data i used in this project goes from NASA API. There is 2 types of data: notifications about new solar flares and data about each flare.
-I implemented "internal API" for getting the relevant data from NASA with FastAPI, afterwards,
+I implemented "internal API" for getting the relevant data from NASA with FastAPI, afterwards, the data is sent to the Kafka, the spark reads the data and transforms it in the proper way and sending it to rhe  
 
 
 ## **Setting up the Kafka Docker image**
