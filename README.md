@@ -5,6 +5,7 @@ The data i used in this project goes from NASA API. There is 2 types of data: no
 I implemented "internal API" for getting the relevant data from NASA with FastAPI, afterwards, the data is sent to the Kafka, the spark reads the data and transforms it in the proper way and sending it to cassandra and in the end Power BI takes data from cassandra and visualizing it.
 
 You can see how the architecure of the solution looks like:
+
 ![Arch](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/a9e61fed-01a8-45b7-8cdb-410dc59a41ec)
 
 ## **Docker**
@@ -50,13 +51,12 @@ To connect the cassandra to our Power BI we need a ODBC driver for cassandra, i 
 
 After installing we need to to set up the driver. For this step we need a ip of the cassandra's container (since we setted up the ports in docker-compose file also for the localhost, we can use simply 127.0.0.1:9042)
 
-Then we need to go to the ODBC Data source administrator and find DataStax Cassandra ODBC DSN
+ - Then we need to go to the ODBC Data source administrator and find DataStax Cassandra ODBC DSN
 ![Screenshot (4)](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/aee1ae90-6c56-484f-ad1d-181bc4bc1cf1)
 
-After this steps we can see a ODBC for cassandra in Power BI.
+ - After this steps we can see a ODBC for cassandra in Power BI.
 ![Screenshot 2024-02-25 124132](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/590a65c3-1c4d-4d77-b6c0-ae76f9a50ea0)
-![Screenshot 2024-02-25 124639](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/c14098ee-a76a-4d75-89a5-112844117f4f)
 
-Finally, after we have all set up, we can make a dashboard that visualize our data:
+ - Finally, after we have all set up, we can make a dashboard that visualize our data:
 ![image](https://github.com/vinogradowvw/NASASolarFlameDataStreaming/assets/143388794/fad85e8d-a6e8-4750-91fa-7d124853593c)
 
